@@ -27,6 +27,15 @@ def index():
     return render_template('feed.html', items=items, options={
         'mark_items': False,
         'date_format': 'Y-m-d',
+        'show_media': False,
+        'show_intro': True,
+        'show_body': False,
+        'show_date': True,
+        'pager': render_template('pager.html', items=items, options={
+            'items_per_page': service.items_per_page,
+            'page_size': service.page_size,
+            'page_index': service.page_index,
+        })
     })
 
 @app.route('/press/<id>')

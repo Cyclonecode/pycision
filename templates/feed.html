@@ -83,8 +83,10 @@
         {% if options['mark_items'] %}
         <span>{{'REGULATORY' if item.IsRegulatory else 'NON REGULATORY'}}</span>
         {% endif %}
+        {% if options['show_date'] %}
         <time>{{item.PublishDate}}</time>
-        {%if item.Images|length %}
+        {% endif %}
+        {%if options['show_image'] and item.Images|length %}
         <div class="cision-feed-item-media">
             <img src="{{ item.Images[0].DownloadUrl }}" alt="{{ item.Images[0].Description }}" />
         </div>
