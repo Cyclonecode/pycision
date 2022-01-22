@@ -29,7 +29,6 @@ def index():
         'date_format': 'Y-m-d',
     })
 
-
 @app.route('/press/<id>')
 def article(id: str) -> dict:
     item = service.get_feed_item(f'{id}')

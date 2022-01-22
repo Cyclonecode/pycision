@@ -13,6 +13,7 @@ class CisionService:
     keywords: list = []
     regulatory: bool = None
     must_have_media: bool = False
+
     CISION_FEED_URL = 'https://publish.ne.cision.com/papi/NewsFeed/{id}'
     CISION_RELEASE_URL = 'http://publish.ne.cision.com/papi/Release/{id}'
     DEFAULT_TYPES = ['PRM']
@@ -91,7 +92,6 @@ class CisionService:
                 if not_found:
                     items.remove(item)
                     continue
-
             if len(self.keywords):
                 print(item.get('Keywords'))
                 if not len(item.get('Keywords', [])):
@@ -103,5 +103,11 @@ class CisionService:
                         print('removing based on keyword => ', item.get('Title'))
                         items.remove(item)
                         break
-
+            if len(self.categories):
+                for category in item.get('Categories', [{ 'Code': None }]):
+                  print (category)
+                  if category.get('Name').lower() not in self.categories:
+                    print ('removing based on category')
+                    items.remove(item)
+        print (len(items))
         return items
