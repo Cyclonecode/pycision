@@ -50,7 +50,7 @@ class CisionService:
             k: v for k, v in params.items() if v
         })
         if response.status_code in [200, 201]:
-            return self.handle_feed_response(response.json())
+            return self.__handle_feed_response(response.json())
 
         return None
 
@@ -63,7 +63,7 @@ class CisionService:
         response = requests.get(self.CISION_RELEASE_URL.format(id=id)).json()
         return response.get('Release')
 
-    def handle_feed_response(self, content: dict) -> dict:
+    def __handle_feed_response(self, content: dict) -> dict:
         items = content.get('Releases')
         for item in items[:]:
             not_found = False
