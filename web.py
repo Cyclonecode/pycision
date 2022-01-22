@@ -1,7 +1,8 @@
-from flask import Flask
+from flask import Flask, render_template
 import requests
 import json
 from cision import CisionService
+# from Jinja2 import Template
 
 app = Flask(__name__)
 
@@ -10,19 +11,18 @@ service = CisionService(options={
     'page_size': 2,
     'items_per_page': 5,
     'language': 'sv',
-    'categories': ['foo', 'bar'],
-    'keywords': ['tag1', 'tag2'],
+    'categories': ['Regular pressreleases', 'BAR'],
+    'keywords': ['tag1', 'TAG2'],
+    'regulatory': False,
 })
 
 @app.route('/')
-@app.route('/hello')
-def hello():
-    # Render the page
-    return "Hello Python!"
-
-@app.route('/page/<int:id>')
-def page(id):
-    return service.getFeed()
+def index():
+    items = service.getFeed()
+    items = items if service.items_per_page == 0 else items[0:service.items_per_page]
+    print(len(items))
+    print(service.items_per_page)
+    return render_template('feed.html', items=items)
 
 if __name__ == '__main__':
     # Run the app server on localhost:4449
