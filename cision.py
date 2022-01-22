@@ -39,7 +39,7 @@ class CisionService:
         self.regulatory = options.get('regulatory', None)
         self.must_have_media = options.get('must_have_media', False)
 
-    def get_feed(self):
+    def get_feed(self) -> list or None:
         params = {
             'PageSize': self.page_size,
             'PageIndex': self.page_index,
@@ -54,7 +54,7 @@ class CisionService:
 
         return None
 
-    def get_feed_item(self, id: str) -> dict:
+    def get_feed_item(self, id: str) -> dict or None:
         """Returns feed item based on its encrypted id.
 
         Arguments:
