@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-<<<<<<< HEAD
     <title>Cision Example</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style type="text/css">
@@ -72,15 +71,6 @@
             .cision-feed-item {
                 padding: 30px;
             }
-=======
-    <title>Flask Template Example</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <style type="text/css">
-        .container {
-            max-width: 500px;
-            padding-top: 100px;
->>>>>>> 14eed98ecb77fc81c126a9e6447a5973cbd7bcbf
         }
     </style>
 </head>
@@ -89,7 +79,6 @@
 
         {% for item in items %}
     <div class="cision-feed-item">
-<<<<<<< HEAD
         <h1>{{item.Title}} {{item.EncryptedId}}</h1>
         {% if options['mark_items'] %}
         <span>{{'REGULATORY' if item.IsRegulatory else 'NON REGULATORY'}}</span>
@@ -105,15 +94,5 @@
     </div>
         {% endfor %}
 </div>
-=======
-        <h1>{{item.Title}}</h1>
-        <time>{{item.PublishDate}}</time>
-        <p>{{item.Intro}}</p>
-    </div>
-        {% endfor %}
-</div>
-<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
->>>>>>> 14eed98ecb77fc81c126a9e6447a5973cbd7bcbf
 </body>
 </html>
