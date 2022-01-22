@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cision Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        .cision-feed-wrapper {
+            width: 100%;
+        }
+        .cision-feed-wrapper ul.cision-feed-pager {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            text-align: center;
+        }
+        .cision-feed-wrapper ul.cision-feed-pager li {
+            margin: 0;
+            padding-right: 10px;
+            display: inline;
+        }
+        .cision-feed-wrapper ul.cision-feed-pager li a {
+            text-decoration: none;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+        .cision-feed-wrapper ul.cision-feed-pager li a.active {
+            text-decoration: underline;
+        }
+        .cision-feed-wrapper ul.cision-feed-filters {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .cision-feed-wrapper ul.cision-feed-filters li {
+            display: inline;
+        }
+        .cision-feed-wrapper ul.cision-feed-filters li button {
+            display: inline-block;
+            float: left;
+            background-color: transparent;
+            color: #000;
+        }
+        .cision-feed-wrapper ul.cision-feed-filters li button:focus {
+            outline: 0;
+        }
+        .cision-feed-item {
+            overflow: hidden;
+            border-bottom: 1px solid #c0c0c0;
+            padding: 15px 0 30px 0;
+            margin-bottom: 15px;
+        }
+        .cision-feed-item .cision-feed-regulatory {
+            display: block;
+            padding: 15px 0;
+        }
+        .cision-feed-item-media {
+            width: 100%;
+            padding-bottom: 10px;
+            display: block;
+        }
+        .cision-feed-item-media img {
+            display: block;
+            margin: 5px auto;
+            max-width: 100%;
+            vertical-align: middle;
+            border: 0;
+        }
+        @media screen and (min-width: 768px) {
+            .cision-feed-item {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="cision-feed-wrapper">
+
+        {% for item in items %}
+    <div class="cision-feed-item">
+        <h1>{{item.Title}} {{item.EncryptedId}}</h1>
+        {% if options['mark_items'] %}
+        <span>{{'REGULATORY' if item.IsRegulatory else 'NON REGULATORY'}}</span>
+        {% endif %}
+        <time>{{item.PublishDate}}</time>
+        {%if item.Images|length %}
+        <div class="cision-feed-item-media">
+            <img src="{{ item.Images[0].DownloadUrl }}" alt="{{ item.Images[0].Description }}" />
+        </div>
+        {% endif %}
+        <p>{{item.Intro if item.Intro else item.Body}}</p><br />
+        <a href="/press/{{ item.EncryptedId }}">Read more</a>
+    </div>
+        {% endfor %}
+</div>
+</body>
+</html>
