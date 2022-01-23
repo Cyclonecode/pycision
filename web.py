@@ -18,6 +18,8 @@ service = CisionService(options={
     'sort_order': 'alpha',
     'sort_direction': 'Ascending',
     'date_format': '%Y-%m-%d',
+    'query_page': 'page',
+    'query_id': 'id',
 })
 
 
@@ -28,7 +30,7 @@ def index():
     items = service.get_feed()
     end = default_timer()
     print('time', 1000 * (end - full_start), 'ms')
-    page = int(request.args.get('cb_page', 0))
+    page = int(request.args.get(service.query_page, 0))
     max_pages = ceil(len(items) / service.items_per_page)
     if page > max_pages - 1:
         page = max_pages - 1
@@ -45,6 +47,8 @@ def index():
             'page_index': service.page_index,
             'page': page,
             'pages': ceil(len(items) / service.items_per_page),
+            'query_page': service.query_page,
+            'query_id': service.query_id,
         })
     content = render_template('feed.html', items=items if service.items_per_page == 0 else items[start:end], options={
         'mark_items': False,

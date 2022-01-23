@@ -13,6 +13,8 @@ class CisionService:
     keywords: list = []
     regulatory: bool = None
     must_have_media: bool = False
+    query_page: str = 'cb_page'
+    query_id: str = 'cb_id'
 
     CISION_FEED_URL = 'https://publish.ne.cision.com/papi/NewsFeed/{id}'
     CISION_RELEASE_URL = 'http://publish.ne.cision.com/papi/Release/{id}'
@@ -36,6 +38,8 @@ class CisionService:
         self.keywords = keywords
         self.regulatory = options.get('regulatory', None)
         self.must_have_media = options.get('must_have_media', False)
+        self.query_page = options.get('query_page', 'cb_page')
+        self.query_id = options.get('query_id', 'cb_id')
 
     def get_feed(self) -> list:
         params = {

@@ -1,5 +1,5 @@
 <ul class="cision-feed-pager">
     {% for i in range(options.pages) %}
-        <li><a href="?cb_page={{ i }}">{{ i + 1 }}</a></li>
+        <li><a href="?{{ options.query_page }}={{ i }}">{{ i + 1 }}</a></li>
     {% endfor %}
 </ul>
