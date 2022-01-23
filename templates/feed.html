@@ -86,7 +86,7 @@
         {% if options['show_date'] %}
         <time>{{item.PublishDate}}</time>
         {% endif %}
-        {%if options['show_image'] and item.Images|length %}
+        {%if options['show_media'] and item.Images|length %}
         <div class="cision-feed-item-media">
             <img src="{{ item.Images[0].DownloadUrl }}" alt="{{ item.Images[0].Description }}" />
         </div>
@@ -95,6 +95,9 @@
         <a href="/press/{{ item.EncryptedId }}">Read more</a>
     </div>
         {% endfor %}
+    {% if options.pager %}
+        {{ options.pager|safe }}
+    {% endif %}
 </div>
 </body>
 </html>
