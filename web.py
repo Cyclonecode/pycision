@@ -25,18 +25,26 @@ service = CisionService(options={
 
 @app.route('/')
 def index():
-    start = default_timer()
-    full_start = start
     items = service.get_feed()
-    end = default_timer()
-    print('time', 1000 * (end - full_start), 'ms')
+    # start = default_timer()
+    # full_start = start
+    # service.bar(items)
+    # end = default_timer()
+    # print('foo time', 1000 * (end - full_start), 'ms')
+    #
+    # start = default_timer()
+    # full_start = start
+    # service.foo(items)
+    # end = default_timer()
+    # print('bar time', 1000 * (end - full_start), 'ms')
+
     page = int(request.args.get(service.query_page, 0))
     max_pages = ceil(len(items) / service.items_per_page)
     if page > max_pages - 1:
         page = max_pages - 1
     if page < 0:
         page = 0
-    print ('length', len(items))
+    print('length', len(items))
     start = page * service.items_per_page
     end = service.items_per_page * (page + 1)
     pager = None
@@ -71,6 +79,11 @@ def index():
     response.headers['Content-length'] = len(content)
     response.headers['Content-Encoding'] = 'gzip'
     return response
+
+
+# TODO: add support to add short codes / functions in jinja2 template to render a block
+#   https://stackoverflow.com/questions/6036082/call-a-python-function-from-jinja2
+#   https://flask.palletsprojects.com/en/2.0.x/api/#flask.Flask.template_global
 
 @app.route('/press/<id>')
 def article(id: str) -> dict:

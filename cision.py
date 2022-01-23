@@ -2,6 +2,48 @@ import requests
 from datetime import datetime
 
 
+# TODO: Handle constants
+class ImmutableDict(dict):
+    def __setitem__(self, key, value):
+        raise TypeError("%r object does not support item assignment" % type(self).__name__)
+
+    def __delitem__(self, key):
+        raise TypeError("%r object does not support item deletion" % type(self).__name__)
+
+    def __getattribute__(self, attribute):
+        if attribute in ('clear', 'update', 'pop', 'popitem', 'setdefault'):
+            raise AttributeError("%r object has no attribute %r" % (type(self).__name__, attribute))
+        return dict.__getattribute__(self, attribute)
+
+    def __hash__(self):
+        return hash(tuple(sorted(self.iteritems())))
+
+    def fromkeys(self, S, v):
+        return type(self)(dict(self).fromkeys(S, v))
+
+
+class ImmutableStr(str):
+    def __setitem__(self, key, value):
+        raise TypeError("%r object STRING __setitem__ does not support item assignment" % type(self).__name__)
+
+    def __set__(self, key, value):
+        raise TypeError("%r object STRING __set__ does not support item assignment" % type(self).__name__)
+
+    def __delitem__(self, key):
+        raise TypeError("%r object does not support item deletion" % type(self).__name__)
+
+
+class ImmutableInt(int):
+    def __setitem__(self, key, value):
+        raise TypeError("%r object INT __setitem__ does not support item assignment" % type(self).__name__)
+
+    def __set__(self, key, value):
+        raise TypeError("%r object INT __set__ does not support item assignment" % type(self).__name__)
+
+    def __delitem__(self, key):
+        raise TypeError("%r object INT does not support item deletion" % type(self).__name__)
+
+
 class CisionService:
     id: int
     page_size: int = 50
@@ -18,7 +60,7 @@ class CisionService:
 
     CISION_FEED_URL = 'https://publish.ne.cision.com/papi/NewsFeed/{id}'
     CISION_RELEASE_URL = 'http://publish.ne.cision.com/papi/Release/{id}'
-    DEFAULT_TYPES = ['PRM']
+    DEFAULT_TYPES = ('PRM',)
     DEFAULT_PAGE_SIZE = 50
     DEFAULT_PAGE_INDEX = 1
     DEFAULT_ITEMS_PER_PAGE = 0
@@ -60,66 +102,48 @@ class CisionService:
 
         return []
 
-    def get_feed_item(self, id: str) -> dict or None:
+    def get_feed_item(self, id: str) -> dict:
         """Returns feed item based on its encrypted id.
 
         Arguments:
         id -- EncryptedId of the release
         """
         response = requests.get(self.CISION_RELEASE_URL.format(id=id)).json()
-        return response.get('Release')
+        return response.get('Release') if response.status_code in [200, 201] else []
 
     @staticmethod
     def __transform_items(items: list) -> list:
-        result = map(lambda it: {
+        return [{
             'EncryptedId': it.get('EncryptedId'),
             'Title': it.get('Title'),
             'Intro': it.get('Intro'),
             'Body': it.get('Body'),
             'Images': it.get('Images'),
-            'PublishDate': it.get('PublishDate'),
-        }, items)
-        return list(result)
+            'PublishDate': datetime.strptime(it.get('PublishDate')[0:it.get('PublishDate').index('T')], '%Y-%m-%d').date(),
+            'Files': it.get('Files'),
+        } for it in items]
 
     def __handle_feed_response(self, content: dict) -> dict:
         items = content.get('Releases')
         for item in items[:]:
-            not_found = False
-            item['PublishDate'] = datetime.strptime(item.get('PublishDate')[0:item.get('PublishDate').index('T')],
-                                                    '%Y-%m-%d').date()
-            if self.must_have_media and not len(item.get('Images', [])):
+            if self.must_have_media and not len(item.get('Images')):
                 print('removing based on media')
                 items.remove(item)
                 continue
             if item.get('InformationType') not in self.types:
-                print('removing based on type')
+                print('removing based on type', item.get('InformationType'))
                 items.remove(item)
                 continue
             if self.language and item.get('LanguageCode') != self.language:
                 print('removing basd on language')
                 items.remove(item)
                 continue
-            if len(self.categories):
-                if not len(item.get('Categories', [])):
-                    items.remove(item)
-                    continue
-                for category in item.get('Categories', [{'Code': None}]):
-                    if category.get('Name').lower() not in self.categories:
-                        print('removing based on category')
-                        not_found = True
-                        break
-                if not_found:
-                    items.remove(item)
-                    continue
-            if len(self.keywords):
-                print(item.get('Keywords'))
-                if not len(item.get('Keywords', [])):
-                    items.remove(item)
-                    continue
-                for keyword in item.get('Keywords', []):
-                    print('keyword', keyword)
-                    if keyword.lower() not in self.keywords:
-                        print('removing based on keyword => ', item.get('Title'))
-                        items.remove(item)
-                        break
+            if len(self.categories) and not bool([c for c in item.get('Categories') if c.get('Name').lower() in self.categories]):
+                print('removing based on category')
+                items.remove(item)
+                continue
+            if len(self.keywords) and not bool([k for k in item.get('Keywords') if k.lower() in self.keywords]):
+                print('removing based on keyword')
+                items.remove(item)
+                continue
         return self.__transform_items(items=items)
