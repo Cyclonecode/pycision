@@ -1,7 +1,6 @@
 import requests
 from datetime import datetime
 
-
 # TODO: Handle constants
 class ImmutableDict(dict):
     def __setitem__(self, key, value):
@@ -108,8 +107,13 @@ class CisionService:
         Arguments:
         id -- EncryptedId of the release
         """
-        response = requests.get(self.CISION_RELEASE_URL.format(id=id)).json()
-        return response.get('Release') if response.status_code in [200, 201] else []
+        response = requests.get(self.CISION_RELEASE_URL.format(id=id), {
+        }, headers={
+            b'User-Agent': 'cisionpy/{0}'.format(self.VERSION),
+            b'Accept-Encoding': 'gzip, deflate',
+            b'Accept': 'application/json'
+        })
+        return response.json().get('Release') if response.status_code in [200, 201] else []
 
     @staticmethod
     def __transform_items(items: list) -> list:

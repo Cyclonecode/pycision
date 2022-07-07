@@ -22,7 +22,6 @@ service = CisionService(options={
     'query_id': 'id',
 })
 
-
 @app.route('/')
 def index():
     items = service.get_feed()
@@ -89,7 +88,6 @@ def index():
 def article(id: str) -> dict:
     item = service.get_feed_item(f'{id}')
     return render_template('article.html', item=item)
-
 
 if __name__ == '__main__':
     app.run('localhost', 4000, debug=True)
