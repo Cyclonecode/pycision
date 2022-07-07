@@ -1,4 +1,5 @@
 import requests
+from functools import lru_cache
 from datetime import datetime
 
 # TODO: Handle constants
@@ -82,6 +83,7 @@ class CisionService:
         self.query_page = options.get('query_page', 'cb_page')
         self.query_id = options.get('query_id', 'cb_id')
 
+    @lru_cache
     def get_feed(self) -> list:
         params = {
             'PageSize': self.page_size,
@@ -101,6 +103,7 @@ class CisionService:
 
         return []
 
+    @lru_cache
     def get_feed_item(self, id: str) -> dict:
         """Returns feed item based on its encrypted id.
 
