@@ -1,4 +1,5 @@
 import requests
+from requests import Response
 from functools import lru_cache
 from datetime import datetime
 
@@ -91,17 +92,10 @@ class CisionService:
             'DetailLevel': 'detail',
             'Regulatory': None if self.regulatory == None else f'{self.regulatory}'.lower()
         }
-        response = requests.get(self.CISION_FEED_URL.format(id=self.id), params={
+        response = self.__fetch(self.CISION_FEED_URL.format(id=self.id), params={
             k: v for k, v in params.items() if v
-        }, headers={
-            b'User-Agent': 'cisionpy/{0}'.format(self.VERSION),
-            b'Accept-Encoding': 'gzip, deflate',
-            b'Accept': 'application/json'
         })
-        if response.status_code in [200, 201]:
-            return self.__handle_feed_response(response.json())
-
-        return []
+        return self.__handle_feed_response(response.json()) if response.status_code in [200, 201] else []
 
     @lru_cache
     def get_feed_item(self, id: str) -> dict:
@@ -110,12 +104,7 @@ class CisionService:
         Arguments:
         id -- EncryptedId of the release
         """
-        response = requests.get(self.CISION_RELEASE_URL.format(id=id), {
-        }, headers={
-            b'User-Agent': 'cisionpy/{0}'.format(self.VERSION),
-            b'Accept-Encoding': 'gzip, deflate',
-            b'Accept': 'application/json'
-        })
+        response = self.__fetch(self.CISION_RELEASE_URL.format(id=id))
         return response.json().get('Release') if response.status_code in [200, 201] else []
 
     @staticmethod
@@ -129,6 +118,14 @@ class CisionService:
             'PublishDate': datetime.strptime(it.get('PublishDate')[0:it.get('PublishDate').index('T')], '%Y-%m-%d').date(),
             'Files': it.get('Files'),
         } for it in items]
+
+    @staticmethod
+    def __fetch(url: str, params: dict = {}) -> Response:
+        return requests.get(url, params, headers={
+            b'User-Agent': 'cisionpy/{0}'.format(CisionService.VERSION),
+            b'Accept-Encoding': 'gzip, deflate',
+            b'Accept': 'application/json'
+        })
 
     def __handle_feed_response(self, content: dict) -> dict:
         items = content.get('Releases')
